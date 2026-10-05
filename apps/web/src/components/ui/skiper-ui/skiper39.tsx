@@ -87,7 +87,7 @@ const CrowdCanvas = ({ src, rows = 15, cols = 7 }: CrowdCanvasProps) => {
 
     const normalWalk = ({ peep, props }: { peep: Peep; props: WalkProps }) => {
       const { startY, endX } = props;
-      const xDuration = 28;
+      const xDuration = 32;
       const yDuration = 0.8;
 
       const tl = gsap.timeline();
@@ -196,8 +196,7 @@ const CrowdCanvas = ({ src, rows = 15, cols = 7 }: CrowdCanvasProps) => {
     };
 
     const initCrowd = () => {
-      const crowdLimit = Math.min(rows * cols, 18);
-      while (availablePeeps.length && crowd.length < crowdLimit) {
+      while (availablePeeps.length) {
         addPeepToCrowd().walk?.progress(Math.random());
       }
     };
@@ -233,7 +232,6 @@ const CrowdCanvas = ({ src, rows = 15, cols = 7 }: CrowdCanvasProps) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
       ctx.scale(devicePixelRatio, devicePixelRatio);
-      ctx.globalAlpha = 0.35;
 
       crowd.forEach((peep) => {
         peep.render(ctx);
@@ -291,15 +289,7 @@ const CrowdCanvas = ({ src, rows = 15, cols = 7 }: CrowdCanvasProps) => {
 
 const Skiper39 = () => {
   return (
-    <div className="relative z-0 isolate h-[300px] w-full overflow-hidden bg-neutral-900 text-white sm:h-[360px]">
-      <div className="absolute inset-x-0 top-8 z-10 grid justify-items-center gap-3 text-center sm:top-10">
-        <span className="text-[10px] uppercase tracking-[0.2em] text-white/60">
-          Moving forward, together
-        </span>
-        <p className="max-w-md px-6 font-cormorant text-2xl italic text-white sm:text-3xl">
-          Make your next move with Besire.
-        </p>
-      </div>
+    <div className="relative z-0 isolate h-[300px] w-full overflow-hidden bg-white text-black sm:h-[360px]">
       <CrowdCanvas src="/images/peeps/all-peeps.png" rows={15} cols={7} />
     </div>
   );
