@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero.svg";
 import Features from "@/demos/ui/demo";
 import HowItWorksBlock from "@/components/ui/how-it-works-2";
-import { Skiper39 } from "@/components/ui/skiper-ui/skiper39";
+
 import { ArrowRight, Sparkles } from "lucide-react";
 
 const HeroSection = () => {
