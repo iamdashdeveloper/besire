@@ -1,15 +1,18 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import LandingLayout from "@/features/landing/LandingLayout";
 import Home from "@/features/landing/Home";
 import ProductsHome from "@/features/landing/ProductsHome";
 import Pricing from "@/features/landing/Pricing";
 import Learning from "@/features/landing/Learning";
+import CourseCreator from "@/features/courses/CourseCreator";
+import CourseLearnerPage from "@/features/courses/CourseLearnerPage";
 import AuthLayout from "@/features/authentication/AuthLayout";
 import Login from "@/features/authentication/Login";
 import Register from "@/features/authentication/Register";
 import BillingLayout from "@/features/billing/BillingLayout";
 import Billing from "@/features/billing/Billing";
+import BillingReturn from "@/features/billing/BillingReturn";
 import DownloadLayout from "@/features/download/DownloadLayout";
 import Download from "@/features/download/Download";
 import AccountLayout from "@/features/account/AccountLayout";
@@ -25,7 +28,17 @@ function App() {
 					<Route path="products" element={<ProductsHome />} />
 					<Route path="pricing" element={<Pricing />} />
 					<Route path="learning" element={<Learning />} />
+					<Route path="courses/:courseId" element={<CourseLearnerPage />} />
 				</Route>
+
+				<Route path="admin" element={<CourseCreator />} />
+				<Route path="admin/create-course" element={<CourseCreator />} />
+				<Route path="admin/manage-courses" element={<CourseCreator />} />
+				<Route path="admin/all-courses" element={<CourseCreator />} />
+				<Route path="admin/course-sales" element={<CourseCreator />} />
+				<Route path="admin/courses/:courseId" element={<CourseCreator />} />
+				<Route path="create-course" element={<Navigate to="/admin" replace />} />
+				<Route path="create-course/:courseId" element={<Navigate to="/admin" replace />} />
 
 				<Route element={<AuthLayout />}>
 					<Route path="login" element={<Login />} />
@@ -34,6 +47,7 @@ function App() {
 
 				<Route element={<BillingLayout />}>
 					<Route path="billing" element={<Billing />} />
+					<Route path="billing/return" element={<BillingReturn />} />
 				</Route>
 
 				<Route element={<DownloadLayout />}>

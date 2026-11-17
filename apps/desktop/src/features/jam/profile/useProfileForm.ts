@@ -3,6 +3,8 @@ import type { Profile } from "../../../../backend/db/models/profile";
 
 function createEmptyProfile(): Profile {
 	return {
+		name: "",
+		documents: [],
 		personal: {
 			fullName: "",
 			preferredName: "",

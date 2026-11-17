@@ -6,7 +6,9 @@ const Navbar = () => {
 	const location = useLocation();
 	const isAuthPage =
 		location.pathname.startsWith("/login") ||
-		location.pathname.startsWith("/signup");
+		location.pathname.startsWith("/signup") ||
+		location.pathname.startsWith("/admin") ||
+		location.pathname.startsWith("/create-course");
 
 	if (isAuthPage) {
 		return null;

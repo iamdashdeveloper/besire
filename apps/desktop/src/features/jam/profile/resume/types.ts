@@ -216,6 +216,8 @@ export function sanitizeProfile(raw: unknown): Profile {
 		: "USD";
 
 	const profile: Profile = {
+		name: safeGetString(personalRaw, "fullName") || "Imported profile",
+		documents: [],
 		personal: {
 			fullName: safeGetString(personalRaw, "fullName") || "",
 			preferredName: safeGetString(personalRaw, "preferredName"),

@@ -1,55 +1,24 @@
-import type { Profile } from "../../../backend/api/index";
+import type { Profile } from "../../../backend/db/models/profile";
+import { getLocalProfile, listLocalProfiles, saveLocalProfile } from "../localProfiles";
 
 export async function createProfile(profile: Profile): Promise<{ _id: string }> {
-  const response = await fetch("http://localhost:3001/api/profile", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(profile),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to create profile: ${response.statusText}`);
-  }
-
-  return response.json();
+	const created = await saveLocalProfile(profile);
+	if (!created._id) throw new Error("The local profile service did not return a profile ID.");
+	return { _id: created._id };
 }
 
 export async function getProfile(): Promise<Profile | null> {
-  const response = await fetch("http://localhost:3001/api/profile");
-
-  if (!response.ok) {
-    throw new Error(`Failed to get profile: ${response.statusText}`);
-  }
-
-  const result = await response.json();
-  return result;
+	const profiles = await listLocalProfiles();
+	return profiles[0] ?? null;
 }
 
-export async function listProfiles(): Promise<Profile[]> {
-  const response = await fetch("http://localhost:3001/api/profiles");
-
-  if (!response.ok) {
-    throw new Error(`Failed to list profiles: ${response.statusText}`);
-  }
-
-  const result = await response.json();
-  return result;
+export function listProfiles(): Promise<Profile[]> {
+	return listLocalProfiles();
 }
 
 export async function updateProfile(id: string, updates: Partial<Profile>): Promise<{ _id: string }> {
-  const response = await fetch(`http://localhost:3001/api/profile/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(updates),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to update profile: ${response.statusText}`);
-  }
-
-  return response.json();
+	const existing = await getLocalProfile(id);
+	const updated = await saveLocalProfile({ ...existing, ...updates, _id: id });
+	if (!updated._id) throw new Error("The local profile service did not return a profile ID.");
+	return { _id: updated._id };
 }

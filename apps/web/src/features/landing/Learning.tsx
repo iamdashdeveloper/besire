@@ -1,5 +1,17 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Compass, Globe2, UserRound } from "lucide-react";
+import {
+	ArrowRight,
+	BookOpen,
+	Compass,
+	Globe2,
+	LoaderCircle,
+	UserRound
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { courseApi, type Course } from "@/lib/courses";
 
 const learningAreas = [
 	{
@@ -23,6 +35,36 @@ const learningAreas = [
 ];
 
 const Learning = () => {
+	const { isLoaded, isSignedIn, getToken } = useAuth();
+	const [courses, setCourses] = useState<Course[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState("");
+	const [retryCount, setRetryCount] = useState(0);
+
+	useEffect(() => {
+		let active = true;
+		if (!isLoaded) return;
+		Promise.resolve(isSignedIn ? getToken() : null)
+			.then((token) => courseApi<Course[]>("/courses", token))
+			.then((result) => {
+				if (active) setCourses(result);
+			})
+			.catch((cause: unknown) => {
+				if (active)
+					setError(
+						cause instanceof Error ?
+							cause.message
+						:	"Courses could not be loaded."
+					);
+			})
+			.finally(() => {
+				if (active) setLoading(false);
+			});
+		return () => {
+			active = false;
+		};
+	}, [getToken, isLoaded, isSignedIn, retryCount]);
+
 	return (
 		<main className='pt-16'>
 			<section className='px-6 py-20 text-neutral-900 sm:py-28 md:px-12'>
@@ -83,9 +125,115 @@ const Learning = () => {
 						))}
 					</div>
 					<p className='mt-6 text-sm text-muted-foreground'>
-						The course catalogue is being prepared. These are learning areas,
-						not individual course listings.
+						Explore published courses below. Course lessons are structured with
+						the same learning experience used in preview.
 					</p>
+				</div>
+			</section>
+
+			<section
+				aria-labelledby='course-catalogue'
+				className='border-t border-border px-6 py-16 md:px-12'>
+				<div className='mx-auto max-w-6xl'>
+					<div className='flex flex-col justify-between gap-4 sm:flex-row sm:items-end'>
+						<div>
+							<p className='text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground'>
+								Course catalogue
+							</p>
+							<h2
+								id='course-catalogue'
+								className='mt-2 text-3xl font-medium tracking-tight sm:text-4xl'>
+								Explore published courses.
+							</h2>
+							<p className='mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground'>
+								Practical courses created for people navigating the modern world
+								of work.
+							</p>
+						</div>
+					</div>
+
+					{loading ?
+						<div className='grid min-h-48 place-items-center'>
+							<LoaderCircle
+								className='size-6 animate-spin text-muted-foreground'
+								aria-label='Loading courses'
+							/>
+						</div>
+					: error ?
+						<div className='mt-8 rounded-md border border-destructive/40 bg-destructive/5 p-5'>
+							<p role='alert' className='text-sm text-destructive'>
+								{error}
+							</p>
+							<Button
+								variant='outline'
+								className='mt-3'
+								onClick={() => {
+									setLoading(true);
+									setError("");
+									setRetryCount((count) => count + 1);
+								}}>
+								Try again
+							</Button>
+						</div>
+					: courses.length ?
+						<div className='mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+							{courses.map((course) => (
+								<Link
+									key={course.id}
+									to={`/courses/${course.id}`}
+									className='group overflow-hidden rounded-lg border border-border bg-background transition-shadow hover:shadow-md'>
+									{course.thumbnailAsset?.url ?
+										<img
+											src={course.thumbnailAsset.url}
+											alt=''
+											className='aspect-[16/9] w-full border-b border-border object-cover'
+										/>
+									:	<div className='grid aspect-[16/9] place-items-center border-b border-border bg-muted/30 text-muted-foreground'>
+											<BookOpen className='size-8' aria-hidden='true' />
+										</div>
+									}
+									<div className='p-5'>
+										<div className='flex items-center justify-between gap-3'>
+											<Badge variant='outline'>Course</Badge>
+											<span className='text-sm font-medium'>
+												{course.price === 0 ?
+													"Free"
+												:	`KSh ${course.price.toLocaleString()}`}
+											</span>
+										</div>
+										<h3 className='mt-4 line-clamp-2 text-lg font-semibold group-hover:underline'>
+											{course.title}
+										</h3>
+										<p className='mt-2 line-clamp-3 min-h-[4.5rem] text-sm leading-relaxed text-muted-foreground'>
+											{course.description}
+										</p>
+										<p className='mt-4 text-xs text-muted-foreground'>
+											By {course.creatorName || "Besire creator"}
+										</p>
+										<p className='mt-5 inline-flex items-center gap-2 text-sm font-medium'>
+											{course.price === 0 || course.accessGranted ?
+												"Go to course"
+											:	"Buy course"}
+											<ArrowRight
+												className='size-4 transition-transform group-hover:translate-x-0.5'
+												aria-hidden='true'
+											/>
+										</p>
+									</div>
+								</Link>
+							))}
+						</div>
+					:	<div className='mt-8 rounded-md border border-dashed border-border px-6 py-14 text-center'>
+							<BookOpen
+								className='mx-auto size-8 text-muted-foreground'
+								aria-hidden='true'
+							/>
+							<h3 className='mt-4 font-medium'>No published courses yet</h3>
+							<p className='mt-2 text-sm text-muted-foreground'>
+								Published courses will appear here when they are ready.
+							</p>
+						</div>
+					}
 				</div>
 			</section>
 

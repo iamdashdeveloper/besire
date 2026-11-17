@@ -108,8 +108,19 @@ export interface WorkPreferences {
 	availability?: string;
 }
 
+export interface ProfileDocument {
+	_id: string;
+	name: string;
+	kind: "resume" | "cv";
+	contentType: "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	sizeBytes: number;
+	createdAt: string;
+}
+
 export interface Profile {
 	_id?: string;
+	name: string;
+	documents: ProfileDocument[];
 
 	[key: string]: unknown;
 

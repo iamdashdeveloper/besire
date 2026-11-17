@@ -37,8 +37,11 @@ export function ProfileSelection({
 							<div className="space-y-3">
 								<div>
 									<h3 className="font-semibold text-base">
-										{p.personal?.fullName || "Untitled Profile"}
+										{p.name || p.personal?.fullName || "Untitled Profile"}
 									</h3>
+									<p className="text-xs text-muted-foreground">
+										{p.documents?.length ?? 0} resumes and CVs
+									</p>
 									{p.personal?.preferredName && (
 										<p className="text-sm text-muted-foreground">
 											{p.personal.preferredName}

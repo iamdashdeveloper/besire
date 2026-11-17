@@ -16,6 +16,7 @@ import { WorkPreferencesStep } from "./WorkPreferencesStep";
 interface ProfileStepperProps {
 	onSave: (profile: Profile) => void;
 	initialProfile?: Partial<Profile>;
+	saving?: boolean;
 }
 
 const steps = [
@@ -34,6 +35,7 @@ const steps = [
 export function ProfileStepper({
 	onSave,
 	initialProfile,
+	saving = false,
 }: ProfileStepperProps) {
 	const [currentStep, setCurrentStep] = useState(0);
 	const { profile, setProfile } = useProfileForm(initialProfile);
@@ -204,8 +206,8 @@ export function ProfileStepper({
 						>
 							Previous
 						</Button>
-						<Button onClick={handleSave} disabled={!isLastStep}>
-							Save Profile
+						<Button onClick={handleSave} disabled={!isLastStep || saving}>
+							{saving ? "Saving…" : "Save Profile"}
 						</Button>
 					</div>
 				</div>
